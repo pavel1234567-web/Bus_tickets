@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Bus Tickets System{% endblock %}
+
+{% block content %}
+<!-- Login Header -->
+<section class="bg-blue-600 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold mb-2">Login</h1>
+            <p class="opacity-90">Log in to your account</p>
+        </div>
+    </div>
+</section>
+
+<!-- Login Form -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="max-w-md mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">Log in</h2>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="bg-red-50 border border-red-200 rounded p-4 mb-4">
+                            {% for error in form.non_field_errors %}
+                                <p class="text-red-700">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.username.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">
+                            Username
+                        </label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <p class="text-red-500 text-sm mt-1">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="{{ form.password.id_for_label }}" class="block text-gray-700 text-sm font-bold mb-2">
+                            Password
+                        </label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <p class="text-red-500 text-sm mt-1">
+                                {% for error in form.password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-6">
+                        <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition font-semibold">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Log in
+                        </button>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-gray-600 mb-2">
+                            Don't have an account? 
+                            <a href="{% url 'tickets:register' %}" class="text-blue-600 hover:text-blue-700 transition">
+                                Register
+                            </a>
+                        </p>
+                        <a href="#" class="text-sm text-blue-600 hover:text-blue-700 transition">
+                            Forgot password?
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    input[type="text"], input[type="password"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.2s;
+    }
+    
+    input[type="text"]:focus, input[type="password"]:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    
+    input[type="text"].error, input[type="password"].error {
+        border-color: #ef4444;
+    }
+</style>
+{% endblock %}

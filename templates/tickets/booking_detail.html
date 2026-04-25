@@ -1,0 +1,789 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Details - {{ booking.booking_reference }}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="bg-blue-600 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold mb-2">Booking Details</h1>
+                <p class="opacity-90">
+                    <i class="fas fa-ticket-alt mr-2"></i>
+                    Booking Reference: {{ booking.booking_reference }}
+                </p>
+            </div>
+            <a href="{% url 'tickets:home' %}" 
+               class="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Details -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Booking Info -->
+            <div class="lg:col-span-2">
+                <!-- Route Details -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">
+                        <i class="fas fa-route mr-2 text-blue-600"></i>Route Details
+                    </h2>
+                    
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-4">
+                        <div class="flex items-center justify-between">
+                            <div class="text-center">
+                                {% if tickets %}
+                                    <h3 class="font-bold text-lg text-blue-800">{{ tickets.0.schedule.route.departure_city }}</h3>
+                                    <p class="text-sm text-gray-600">Departure</p>
+                                    <p class="font-medium">{{ tickets.0.schedule.departure_time|date:"d.m.Y H:i" }}</p>
+                                    <p class="text-sm text-gray-700 font-medium">
+                                        <i class="fas fa-map-marker-alt mr-1"></i>{{ tickets.0.schedule.route.departure_address|default:"Main Bus Station" }}
+                                    </p>
+                                {% else %}
+                                    <h3 class="font-bold text-lg text-blue-800">Unknown</h3>
+                                    <p class="text-sm text-gray-600">Departure</p>
+                                    <p class="font-medium">--</p>
+                                    <p class="text-sm text-gray-700 font-medium">
+                                        <i class="fas fa-map-marker-alt mr-1"></i>Main Bus Station
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div class="flex-1 px-4">
+                                <div class="relative">
+                                    <div class="border-t-2 border-dashed border-blue-300"></div>
+                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white px-2">
+                                        <i class="fas fa-bus text-blue-600"></i>
+                                    </div>
+                                </div>
+                                <p class="text-center text-sm text-gray-600 mt-2">{% if tickets %}{{ tickets.0.schedule.route.estimated_time|default:"~4 hours" }}{% else %}~4 hours{% endif %}</p>
+                            </div>
+                            <div class="text-center">
+                                {% if tickets %}
+                                    <h3 class="font-bold text-lg text-blue-800">{{ tickets.0.schedule.route.arrival_city }}</h3>
+                                    <p class="text-sm text-gray-600">Arrival</p>
+                                    <p class="font-medium">{{ tickets.0.schedule.arrival_time|date:"d.m.Y H:i" }}</p>
+                                    <p class="text-sm text-gray-700 font-medium">
+                                        <i class="fas fa-map-marker-alt mr-1"></i>{{ tickets.0.schedule.route.arrival_address|default:"Main Bus Station" }}
+                                    </p>
+                                {% else %}
+                                    <h3 class="font-bold text-lg text-blue-800">Unknown</h3>
+                                    <p class="text-sm text-gray-600">Arrival</p>
+                                    <p class="font-medium">--</p>
+                                    <p class="text-sm text-gray-700 font-medium">
+                                        <i class="fas fa-map-marker-alt mr-1"></i>Main Bus Station
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        {% if tickets %}
+                            <div class="bg-gray-50 rounded p-3">
+                                <p class="text-gray-500">Bus Type</p>
+                                <p class="font-medium">{{ tickets.0.schedule.bus.get_bus_type_display|default:"Standard Bus" }}</p>
+                                <p class="text-xs text-gray-400">{{ tickets.0.schedule.bus.registration_number }}</p>
+                            </div>
+                            <div class="bg-gray-50 rounded p-3">
+                                <p class="text-gray-500">Capacity</p>
+                                <p class="font-medium">{{ tickets.0.schedule.bus.total_seats }} seats</p>
+                                <p class="text-xs text-gray-400">{{ tickets.0.schedule.bus.seats_per_row }} per row</p>
+                            </div>
+                            <div class="bg-gray-50 rounded p-3">
+                                <p class="text-gray-500">Distance</p>
+                                <p class="font-medium">{{ tickets.0.schedule.route.distance|default:"~300 km" }}</p>
+                                <p class="text-xs text-gray-400">{{ tickets.0.schedule.route.estimated_time|default:"~4 hours" }}</p>
+                            </div>
+                        {% else %}
+                            <div class="bg-gray-50 rounded p-3">
+                                <p class="text-gray-500">Bus Type</p>
+                                <p class="font-medium">Standard Bus</p>
+                                <p class="text-xs text-gray-400">Unknown</p>
+                            </div>
+                            <div class="bg-gray-50 rounded p-3">
+                                <p class="text-gray-500">Capacity</p>
+                                <p class="font-medium">40 seats</p>
+                                <p class="text-xs text-gray-400">4 per row</p>
+                            </div>
+                            <div class="bg-gray-50 rounded p-3">
+                                <p class="text-gray-500">Distance</p>
+                                <p class="font-medium">~300 km</p>
+                                <p class="text-xs text-gray-400">~4 hours</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Tickets Information -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">
+                        <i class="fas fa-ticket-alt mr-2 text-green-600"></i>Your Tickets
+                    </h2>
+                    
+                    {% for ticket in tickets %}
+                        <div class="border border-gray-200 rounded-lg p-4 mb-4 hover:shadow-md transition">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-semibold text-lg">Ticket {{ forloop.counter }}</h3>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                                        <i class="fas fa-couch mr-1"></i>Seat {{ ticket.seat_number }}
+                                    </span>
+                                    <span class="px-2 py-1 {% if ticket.status == 'paid' %}bg-green-100 text-green-800{% else %}bg-orange-100 text-orange-800{% endif %} rounded text-sm">
+                                        {{ ticket.get_status_display }}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Passenger</p>
+                                    <p class="font-medium">{{ booking.first_name }} {{ booking.last_name }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Contact</p>
+                                    <p class="font-medium">{{ booking.email }}</p>
+                                    {% if booking.phone %}
+                                        <p class="text-xs text-gray-400">{{ booking.phone }}</p>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Departure Date & Time</p>
+                                    <p class="font-medium">{{ ticket.schedule.departure_time|date:"d.m.Y H:i" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Gate</p>
+                                    <p class="font-medium">A1</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3 pt-3 border-t border-gray-100">
+                                <div class="flex items-center justify-between">
+                                    <p class="text-sm text-gray-500">Ticket Price</p>
+                                    <p class="font-semibold text-lg text-blue-600">{{ ticket.price|floatformat:2 }} RUB</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Booking Summary -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">
+                        <i class="fas fa-receipt mr-2"></i>Booking Summary
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-blue-100">Booking Reference</p>
+                            <p class="font-semibold text-lg">{{ booking.booking_reference }}</p>
+                        </div>
+                        <div>
+                            <p class="text-blue-100">Booking Date</p>
+                            <p class="font-semibold">{{ booking.created_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-blue-100">Number of Tickets</p>
+                            <p class="font-semibold">{{ tickets|length }}</p>
+                        </div>
+                        <div>
+                            <p class="text-blue-100">Payment Status</p>
+                            <p class="font-semibold">
+                                {% if booking.is_paid %}
+                                    <span class="text-green-300">
+                                        <i class="fas fa-check-circle mr-1"></i>Paid
+                                    </span>
+                                {% else %}
+                                    <span class="text-yellow-300">
+                                        <i class="fas fa-clock mr-1"></i>Pending Payment
+                                    </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <p class="text-xl font-semibold">Total Amount</p>
+                            <p class="text-2xl font-bold">{{ booking.total_price|floatformat:2 }} RUB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passenger Information Form -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">
+                        {% if is_anonymous %}
+                            <i class="fas fa-user-plus mr-2 text-orange-600"></i>Complete Your Information
+                        {% else %}
+                            <i class="fas fa-user-edit mr-2 text-blue-600"></i>Passenger Information
+                        {% endif %}
+                    </h2>
+                    
+                    {% if is_anonymous %}
+                        <p class="text-gray-600 mb-4">Please provide your details to receive your tickets via email and download PDF.</p>
+                    {% else %}
+                        <p class="text-gray-600 mb-4">Review and update your passenger information.</p>
+                    {% endif %}
+                    
+                    <form method="post" action="{% if is_anonymous %}{% url 'tickets:complete_anonymous_booking' booking.id %}{% else %}{% url 'tickets:update_booking' booking.id %}{% endif %}">
+                        {% csrf_token %}
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">{{ form.first_name.label }}</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <p class="text-red-500 text-sm mt-1">{{ form.first_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">{{ form.last_name.label }}</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <p class="text-red-500 text-sm mt-1">{{ form.last_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">{{ form.email.label }}</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <p class="text-red-500 text-sm mt-1">{{ form.email.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">{{ form.phone.label }}</label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <p class="text-red-500 text-sm mt-1">{{ form.phone.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition">
+                                {% if is_anonymous %}
+                                    <i class="fas fa-paper-plane mr-2"></i>Send Tickets to Email
+                                {% else %}
+                                    <i class="fas fa-save mr-2"></i>Update Information
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Payment Section -->
+                {% if not booking.is_paid %}
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">
+                        <i class="fas fa-credit-card mr-2 text-green-600"></i>Complete Payment
+                    </h2>
+                    
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-blue-600">Amount to Pay</p>
+                                <p class="text-2xl font-bold text-blue-800">{{ booking.total_price|floatformat:2 }} RUB</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm text-gray-600">Booking Reference</p>
+                                <p class="font-mono text-lg font-semibold">{{ booking.booking_reference }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold mb-3">Select Payment Method</h3>
+                        
+                        <!-- LiPay Option -->
+                        <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 transition cursor-pointer payment-method" 
+                             onclick="selectPaymentMethod('lipay')">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <input type="radio" name="payment_method" value="lipay" id="lipay_option" 
+                                           class="mr-3" checked>
+                                    <label for="lipay_option" class="cursor-pointer">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                                <span class="text-white font-bold text-sm">LP</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">LiPay</p>
+                                                <p class="text-sm text-gray-600">Fast and secure payment</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    <i class="fas fa-shield-alt mr-1"></i>Secure
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PayPal Option -->
+                        <div class="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 transition cursor-pointer payment-method" 
+                             onclick="selectPaymentMethod('paypal')">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <input type="radio" name="payment_method" value="paypal" id="paypal_option" 
+                                           class="mr-3">
+                                    <label for="paypal_option" class="cursor-pointer">
+                                        <div class="flex items-center">
+                                            <div class="w-10 h-10 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg flex items-center justify-center mr-3">
+                                                <span class="text-white font-bold text-sm">P</span>
+                                            </div>
+                                            <div>
+                                                <p class="font-semibold">PayPal</p>
+                                                <p class="text-sm text-gray-600">Pay with PayPal account</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    <i class="fab fa-paypal mr-1"></i>PayPal
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <form id="paymentForm" method="POST" action="{% url 'tickets:process_payment' booking.id %}" class="mt-6">
+                        {% csrf_token %}
+                        <input type="hidden" name="payment_method" id="selected_payment_method" value="lipay">
+                        
+                        <!-- Additional payment fields (hidden for now) -->
+                        <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                        
+                        <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                            <h4 class="font-semibold mb-2">Payment Summary</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Booking Reference:</span>
+                                    <span class="font-medium">{{ booking.booking_reference }}</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Route:</span>
+                                    <span class="font-medium">
+                                        {% if tickets %}
+                                            {{ tickets.0.schedule.route.departure_city }} - {{ tickets.0.schedule.route.arrival_city }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Tickets:</span>
+                                    <span class="font-medium">{{ tickets|length }}</span>
+                                </div>
+                                <div class="flex justify-between font-semibold text-lg pt-2 border-t">
+                                    <span>Total:</span>
+                                    <span class="text-green-600">{{ booking.total_price|floatformat:2 }} RUB</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" 
+                                class="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-semibold flex items-center justify-center">
+                            <i class="fas fa-lock mr-2"></i>
+                            Proceed to Secure Payment
+                        </button>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <p class="text-sm text-gray-500">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            Your payment information is encrypted and secure
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-4">
+                        <i class="fas fa-bolt mr-2 text-yellow-500"></i>Quick Actions
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        {% if booking.is_paid %}
+                            <a href="{% url 'tickets:download_ticket_pdf' booking.id %}" 
+                               target="_blank"
+                               class="w-full bg-green-600 text-white px-4 py-3 rounded hover:bg-green-700 transition flex items-center justify-center">
+                                <i class="fas fa-download mr-2"></i>Download PDF Ticket
+                            </a>
+                            
+                            {% if request.user.is_authenticated %}
+                                <button onclick="showEmailModal()" 
+                                        class="w-full bg-purple-600 text-white px-4 py-3 rounded hover:bg-purple-700 transition flex items-center justify-center">
+                                    <i class="fas fa-envelope mr-2"></i>Send to Email
+                                </button>
+                            {% else %}
+                                <button onclick="sendTicketToBookingEmail()" 
+                                        class="w-full bg-purple-600 text-white px-4 py-3 rounded hover:bg-purple-700 transition flex items-center justify-center">
+                                    <i class="fas fa-envelope mr-2"></i>Send to My Email
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <div class="bg-gray-100 border border-gray-300 rounded-lg p-4 text-center">
+                                <i class="fas fa-lock text-gray-400 text-2xl mb-2"></i>
+                                <p class="text-gray-600 font-medium mb-2">Payment Required</p>
+                                <p class="text-sm text-gray-500">Download and email features will be available after payment completion</p>
+                            </div>
+                        {% endif %}
+                        
+                        <a href="{% url 'tickets:home' %}" 
+                           class="w-full bg-gray-600 text-white px-4 py-3 rounded hover:bg-gray-700 transition flex items-center justify-center">
+                            <i class="fas fa-search mr-2"></i>Book Another Trip
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Important Information -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-3 text-yellow-800">
+                        <i class="fas fa-info-circle mr-2"></i>Important Information
+                    </h3>
+                    
+                    <ul class="space-y-2 text-sm text-yellow-800">
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle mr-2 mt-0.5 text-yellow-600"></i>
+                            Please arrive at the station 30 minutes before departure
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle mr-2 mt-0.5 text-yellow-600"></i>
+                            Bring a valid ID document for verification
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle mr-2 mt-0.5 text-yellow-600"></i>
+                            Keep your booking reference handy
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check-circle mr-2 mt-0.5 text-yellow-600"></i>
+                            Tickets are non-refundable unless canceled 24h in advance
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <h3 class="text-lg font-bold mb-3">
+                        <i class="fas fa-headset mr-2 text-gray-600"></i>Need Help?
+                    </h3>
+                    
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-600">
+                            <i class="fas fa-phone mr-2 text-gray-400"></i>
+                            <strong>Phone:</strong> +7 (800) 123-45-67
+                        </p>
+                        <p class="text-gray-600">
+                            <i class="fas fa-envelope mr-2 text-gray-400"></i>
+                            <strong>Email:</strong> support@bustickets.com
+                        </p>
+                        <p class="text-gray-600">
+                            <i class="fas fa-clock mr-2 text-gray-400"></i>
+                            <strong>Hours:</strong> 24/7 Support
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Email Modal -->
+<div id="emailModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Send Ticket to Email</h3>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Choose Email Address:</label>
+                
+                <!-- User Email Option -->
+                <div class="mb-3">
+                    <label class="flex items-center">
+                        <input type="radio" name="emailOption" value="user" checked class="mr-2">
+                        <span>My Email ({{ request.user.email }})</span>
+                    </label>
+                </div>
+                
+                <!-- Manual Input Option -->
+                <div class="mb-3">
+                    <label class="flex items-center">
+                        <input type="radio" name="emailOption" value="manual" class="mr-2">
+                        <span>Custom Email Address</span>
+                    </label>
+                </div>
+                
+                <!-- Manual Email Input -->
+                <div id="manualEmailInput" class="hidden">
+                    <input type="email" id="customEmail" placeholder="Enter email address" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeEmailModal()" 
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition">
+                    Cancel
+                </button>
+                <button onclick="sendTicketToSelectedEmail()" 
+                        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                    Send Ticket
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global functions for email modal
+function downloadPDF() {
+    window.open('{% url "tickets:download_ticket_pdf" booking.id %}', '_blank');
+}
+
+function sendEmail() {
+    // Submit the form to send email to passenger
+    document.querySelector('form').submit();
+}
+
+function showEmailModal() {
+    document.getElementById('emailModal').classList.remove('hidden');
+}
+
+function closeEmailModal() {
+    document.getElementById('emailModal').classList.add('hidden');
+    // Reset form
+    document.querySelector('input[name="emailOption"][value="user"]').checked = true;
+    document.getElementById('manualEmailInput').classList.add('hidden');
+    document.getElementById('customEmail').value = '';
+}
+
+function sendTicketToSelectedEmail() {
+    const emailOption = document.querySelector('input[name="emailOption"]:checked').value;
+    let targetEmail;
+    let endpoint;
+    
+    if (emailOption === 'user') {
+        // Use the send-to-user endpoint for user's own email
+        endpoint = `/booking/{{ booking.id }}/send-to-user/`;
+    } else {
+        targetEmail = document.getElementById('customEmail').value.trim();
+        
+        // Validate email
+        if (!targetEmail) {
+            alert('Please enter an email address');
+            return;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(targetEmail)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+        
+        // Use the send-to-custom-email endpoint for custom email
+        endpoint = `/booking/{{ booking.id }}/send-to-custom-email/`;
+    }
+    
+    // Send ticket to selected email
+    fetch(endpoint, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        },
+        body: emailOption === 'user' ? '{}' : JSON.stringify({
+            'email': targetEmail
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Use server message instead of hardcoded message
+            showNotification(data.message || 'Email processed successfully!', 'success');
+            closeEmailModal();
+        } else {
+            showNotification(data.error || 'Failed to send email. Please try again.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Network error. Please try again.', 'error');
+    });
+}
+
+// Handle radio button changes
+document.addEventListener('DOMContentLoaded', function() {
+    const emailRadios = document.querySelectorAll('input[name="emailOption"]');
+    emailRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const manualInput = document.getElementById('manualEmailInput');
+            if (this.value === 'manual') {
+                manualInput.classList.remove('hidden');
+            } else {
+                manualInput.classList.add('hidden');
+            }
+        });
+    });
+});
+
+function getCSRFToken() {
+    const cookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+    if (cookie) {
+        return cookie.split('=')[1];
+    }
+    
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag) {
+        return metaTag.getAttribute('content');
+    }
+    
+    const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    if (csrfInput) {
+        return csrfInput.value;
+    }
+    
+    return '';
+}
+
+// Payment method selection
+function selectPaymentMethod(method) {
+    // Update hidden input
+    document.getElementById('selected_payment_method').value = method;
+    
+    // Update radio buttons
+    document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+        radio.checked = radio.value === method;
+    });
+    
+    // Update visual selection
+    document.querySelectorAll('.payment-method').forEach(element => {
+        element.classList.remove('border-blue-400', 'bg-blue-50');
+        element.classList.add('border-gray-200');
+    });
+    
+    // Add selection to chosen method
+    const selectedMethod = document.querySelector(`input[value="${method}"]`).closest('.payment-method');
+    selectedMethod.classList.remove('border-gray-200');
+    selectedMethod.classList.add('border-blue-400', 'bg-blue-50');
+}
+
+// Initialize payment method selection
+document.addEventListener('DOMContentLoaded', function() {
+    // Set initial selection for LiPay
+    selectPaymentMethod('lipay');
+    
+    // Handle radio button changes
+    const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            selectPaymentMethod(this.value);
+        });
+    });
+});
+
+// Function for anonymous users to send ticket to their booking email
+function sendTicketToBookingEmail() {
+    const bookingId = {{ booking.id }};
+    const bookingEmail = '{{ booking.email|escapejs }}';
+    
+    // Show loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
+    button.disabled = true;
+    
+    // Send request to send email to booking email
+    fetch(`/booking/${bookingId}/send-to-booking-email/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            'email': bookingEmail
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Restore button
+        button.innerHTML = originalText;
+        button.disabled = false;
+        
+        if (data.success) {
+            // Show success message from server
+            showNotification(data.message || 'Email processed successfully!', 'success');
+        } else {
+            // Show error message
+            showNotification(data.message || 'Failed to send email. Please try again.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Restore button
+        button.innerHTML = originalText;
+        button.disabled = false;
+        showNotification('Network error. Please try again.', 'error');
+    });
+}
+
+// Helper function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Helper function to show notifications
+function showNotification(message, type) {
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500 text-white' : 
+        type === 'error' ? 'bg-red-500 text-white' : 
+        'bg-blue-500 text-white'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas ${
+                type === 'success' ? 'fa-check-circle' : 
+                type === 'error' ? 'fa-exclamation-circle' : 
+                'fa-info-circle'
+            } mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

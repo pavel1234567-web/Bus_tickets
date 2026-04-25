@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Контакты - Система продажи автобусных билетов{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="bg-blue-600 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4">Контакты</h1>
+            <p class="text-xl opacity-90">Свяжитесь с нами - мы всегда готовы помочь!</p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Content -->
+<section class="py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                
+                <!-- Contact Information -->
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8">Наши контакты</h2>
+                    
+                    <!-- Contact Cards -->
+                    <div class="space-y-6">
+                        <!-- Main Office -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                    <i class="fas fa-building text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-2">Главный офис</h3>
+                                    <p class="text-gray-600 mb-2">
+                                        г. Москва, ул. Транспортная, 15<br>
+                                        Бизнес-центр "Автовокзал", 3 этаж
+                                    </p>
+                                    <p class="text-sm text-gray-500">
+                                        Время работы: Пн-Пт 9:00-18:00, Сб 10:00-16:00
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                    <i class="fas fa-phone text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-2">Телефоны</h3>
+                                    <p class="text-gray-600">
+                                        <strong>Горячая линия:</strong> +7 (800) 123-45-67<br>
+                                        <strong>Офис:</strong> +7 (495) 123-45-67<br>
+                                        <strong>WhatsApp:</strong> +7 (900) 123-45-67
+                                    </p>
+                                    <p class="text-sm text-gray-500 mt-2">
+                                        Горячая линия работает 24/7
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                    <i class="fas fa-envelope text-purple-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-2">Email</h3>
+                                    <p class="text-gray-600">
+                                        <strong>Общие вопросы:</strong> info@bustickets.com<br>
+                                        <strong>Поддержка:</strong> support@bustickets.com<br>
+                                        <strong>Бизнес:</strong> business@bustickets.com
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Media -->
+                        <div class="bg-white rounded-lg shadow-md p-6">
+                            <div class="flex items-start">
+                                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                    <i class="fas fa-share-alt text-orange-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-semibold mb-3">Социальные сети</h3>
+                                    <div class="flex space-x-4">
+                                        <a href="#" class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition">
+                                            <i class="fab fa-facebook-f"></i>
+                                        </a>
+                                        <a href="#" class="w-10 h-10 bg-blue-400 text-white rounded-full flex items-center justify-center hover:bg-blue-500 transition">
+                                            <i class="fab fa-twitter"></i>
+                                        </a>
+                                        <a href="#" class="w-10 h-10 bg-pink-600 text-white rounded-full flex items-center justify-center hover:bg-pink-700 transition">
+                                            <i class="fab fa-instagram"></i>
+                                        </a>
+                                        <a href="#" class="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-700 transition">
+                                            <i class="fab fa-youtube"></i>
+                                        </a>
+                                        <a href="#" class="w-10 h-10 bg-blue-700 text-white rounded-full flex items-center justify-center hover:bg-blue-800 transition">
+                                            <i class="fab fa-vk"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8">Форма обратной связи</h2>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="mb-4 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" class="bg-white rounded-lg shadow-md p-8">
+                        {% csrf_token %}
+                        
+                        <div class="mb-6">
+                            <label for="name" class="block text-gray-700 font-medium mb-2">Ваше имя *</label>
+                            <input type="text" 
+                                   id="name" 
+                                   name="name" 
+                                   value="{{ form_data.name|default:'' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Введите ваше имя">
+                            {% if errors.name %}
+                                <p class="text-red-500 text-sm mt-1">{{ errors.name }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="email" class="block text-gray-700 font-medium mb-2">Email *</label>
+                            <input type="email" 
+                                   id="email" 
+                                   name="email" 
+                                   value="{{ form_data.email|default:'' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="ваш@email.com">
+                            {% if errors.email %}
+                                <p class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="subject" class="block text-gray-700 font-medium mb-2">Тема сообщения *</label>
+                            <input type="text" 
+                                   id="subject" 
+                                   name="subject" 
+                                   value="{{ form_data.subject|default:'' }}"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                   placeholder="Укажите тему сообщения">
+                            {% if errors.subject %}
+                                <p class="text-red-500 text-sm mt-1">{{ errors.subject }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="message" class="block text-gray-700 font-medium mb-2">Сообщение *</label>
+                            <textarea id="message" 
+                                      name="message" 
+                                      rows="6" 
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                      placeholder="Опишите ваш вопрос или предложение...">{{ form_data.message|default:'' }}</textarea>
+                            {% if errors.message %}
+                                <p class="text-red-500 text-sm mt-1">{{ errors.message }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" 
+                                class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center">
+                            <i class="fas fa-paper-plane mr-2"></i>
+                            Отправить сообщение
+                        </button>
+                    </form>
+                    
+                    <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+                        <p class="text-sm text-gray-600 text-center">
+                            <i class="fas fa-lock mr-1"></i>
+                            Ваши данные защищены и не будут переданы третьим лицам
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="bg-gray-50 py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Часто задаваемые вопросы</h2>
+            
+            <div class="space-y-4">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-3">Как забронировать билет онлайн?</h3>
+                    <p class="text-gray-600">
+                        Просто выберите маршрут, дату и количество мест, затем перейдите к оплате. 
+                        Вы получите электронный билет на ваш email.
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-3">Можно ли вернуть билет?</h3>
+                    <p class="text-gray-600">
+                        Да, вы можете вернуть билет за 24 часа до отправления. 
+                        Условия возврата зависят от тарифа перевозчика.
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-3">Какие способы оплаты доступны?</h3>
+                    <p class="text-gray-600">
+                        Мы принимаем банковские карты (Visa, MasterCard), электронные кошельки 
+                        и оплату через банковские приложения.
+                    </p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-xl font-semibold mb-3">Что делать если опоздал на автобус?</h3>
+                    <p class="text-gray-600">
+                        К сожалению, в этом случае билет не подлежит возврату. 
+                        Рекомендуем приезжать на автовокзал за 30 минут до отправления.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Как нас найти</h2>
+            
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4">Адрес главного офиса</h3>
+                        <div class="space-y-2 text-gray-600">
+                            <p><strong>Адрес:</strong> г. Москва, ул. Транспортная, 15</p>
+                            <p><strong>Метро:</strong> Комсомольская (пешком 5 минут)</p>
+                            <p><strong>Автобусы:</strong> №7, №15, №23 (ост. "Автовокзал")</p>
+                            <p><strong>Парковка:</strong> Бесплатная для клиентов</p>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h4 class="font-semibold mb-2">Как добраться:</h4>
+                            <ul class="text-gray-600 space-y-1">
+                                <li>• От метро Комсомольская пешком 5 минут</li>
+                                <li>• Автобусом №7 от Казанского вокзала</li>
+                                <li>• На автомобиле по шоссе Энтузиастов</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-200 rounded-lg h-64 flex items-center justify-center">
+                        <div class="text-center text-gray-500">
+                            <i class="fas fa-map-marked-alt text-4xl mb-2"></i>
+                            <p>Интерактивная карта</p>
+                            <p class="text-sm">Здесь будет отображена карта</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

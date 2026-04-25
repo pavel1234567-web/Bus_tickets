@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Details - {{ booking.booking_reference }}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="bg-blue-600 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold mb-2">Booking Details</h1>
+                <p class="opacity-90">
+                    <i class="fas fa-ticket-alt mr-2"></i>
+                    Booking Reference: {{ booking.booking_reference }}
+                </p>
+            </div>
+            <a href="{% url 'tickets:home' %}" 
+               class="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Details -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Booking Info -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">Booking Information</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Booking Reference</p>
+                            <p class="font-semibold">{{ booking.booking_reference }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Booking Date</p>
+                            <p class="font-semibold">{{ booking.created_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Status</p>
+                            <p class="font-semibold">
+                                {% if booking.is_paid %}
+                                    <span class="text-green-600">Paid</span>
+                                {% else %}
+                                    <span class="text-orange-600">Pending Payment</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Total Price</p>
+                            <p class="font-semibold text-lg text-blue-600">{{ booking.total_price|floatformat:2 }} RUB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tickets Information -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">Ticket Information</h2>
+                    
+                    {% for ticket in tickets %}
+                        <div class="border border-gray-200 rounded-lg p-4 mb-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-semibold">Ticket {{ forloop.counter }}</h3>
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">
+                                    Seat {{ ticket.seat_number }}
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                <div>
+                                    <p class="text-gray-500">Route</p>
+                                    <p class="font-medium">{{ booking.schedule.route.departure_city }} - {{ booking.schedule.route.arrival_city }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Bus</p>
+                                    <p class="font-medium">{{ booking.schedule.bus.registration_number }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Departure</p>
+                                    <p class="font-medium">{{ booking.schedule.departure_time|date:"d.m.Y H:i" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Arrival</p>
+                                    <p class="font-medium">{{ booking.schedule.arrival_time|date:"d.m.Y H:i" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Price</p>
+                                    <p class="font-medium">{{ ticket.price|floatformat:2 }} RUB</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-500">Status</p>
+                                    <p class="font-medium">{{ ticket.get_status_display }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Passenger Information Form -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">
+                        {% if is_anonymous %}
+                            <i class="fas fa-user mr-2"></i>Complete Your Information
+                        {% else %}
+                            <i class="fas fa-user mr-2"></i>Passenger Information
+                        {% endif %}
+                    </h2>
+                    
+                    {% if is_anonymous %}
+                        <p class="text-gray-600 mb-4">Please provide your details to receive your tickets via email.</p>
+                    {% else %}
+                        <p class="text-gray-600 mb-4">Review and update your passenger information.</p>
+                    {% endif %}
+                    
+                    <form method="post" action="{% if is_anonymous %}{% url 'tickets:complete_anonymous_booking' booking.id %}{% else %}{% url 'tickets:update_booking' booking.id %}{% endif %}">
+                        {% csrf_token %}
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">{{ form.first_name.label }}</label>
+                                {{ form.first_name }}
+                                {% if form.first_name.errors %}
+                                    <p class="text-red-500 text-sm mt-1">{{ form.first_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">{{ form.last_name.label }}</label>
+                                {{ form.last_name }}
+                                {% if form.last_name.errors %}
+                                    <p class="text-red-500 text-sm mt-1">{{ form.last_name.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">{{ form.email.label }}</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <p class="text-red-500 text-sm mt-1">{{ form.email.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">{{ form.phone.label }}</label>
+                                {{ form.phone }}
+                                {% if form.phone.errors %}
+                                    <p class="text-red-500 text-sm mt-1">{{ form.phone.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                                {% if is_anonymous %}
+                                    <i class="fas fa-envelope mr-2"></i>Send Tickets to Email
+                                {% else %}
+                                    <i class="fas fa-save mr-2"></i>Update Information
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div>
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="font-bold mb-4">Quick Actions</h3>
+                    
+                    <div class="space-y-3">
+                        {% if is_anonymous %}
+                            <button onclick="downloadPDF()" class="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                                <i class="fas fa-download mr-2"></i>Download PDF
+                            </button>
+                            
+                            <button onclick="sendEmail()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                                <i class="fas fa-envelope mr-2"></i>Send to Email
+                            </button>
+                        {% else %}
+                            <a href="{% url 'tickets:user_bookings' %}" class="block w-full bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-center">
+                                <i class="fas fa-history mr-2"></i>My Bookings
+                            </a>
+                            
+                            <a href="{% url 'tickets:user_profile' %}" class="block w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition text-center">
+                                <i class="fas fa-user mr-2"></i>My Profile
+                            </a>
+                        {% endif %}
+                        
+                        <button onclick="window.print()" class="w-full bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                            <i class="fas fa-print mr-2"></i>Print
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Help Section -->
+                <div class="bg-blue-50 rounded-lg p-6">
+                    <h3 class="font-bold mb-3 text-blue-900">
+                        <i class="fas fa-question-circle mr-2"></i>Need Help?
+                    </h3>
+                    <div class="text-sm text-blue-800">
+                        <p class="mb-2">If you have any questions about your booking, please contact our support team.</p>
+                        <p><strong>Email:</strong> support@bustickets.com</p>
+                        <p><strong>Phone:</strong> +7 (800) 123-45-67</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function downloadPDF() {
+    window.open('{% url "tickets:download_ticket_pdf" booking.id %}', '_blank');
+}
+
+function sendEmail() {
+    // Submit the form to send email
+    document.querySelector('form').submit();
+}
+</script>
+{% endblock %}

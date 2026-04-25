@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+
+{% block title %}Bus Tickets - Find Your Route{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-gradient text-white py-16">
+    <div class="container mx-auto px-4">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4">Travel comfortably with BusTickets</h1>
+            <p class="text-xl opacity-90 mb-8">Fast and safe booking of bus tickets online</p>
+        </div>
+    </div>
+</section>
+
+<!-- Search Section -->
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto search-form-container rounded-xl p-8">
+            <form method="GET" action="{% url 'tickets:search_routes' %}" class="search-form space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="input-icon">
+                        <label class="block text-gray-700 font-semibold mb-3">
+                            <i class="fas fa-map-marker-alt mr-2"></i> From
+                        </label>
+                        <div class="relative">
+                            {{ form.departure_city }}
+                            <button type="button" 
+                                    class="absolute inset-y-0 right-0 flex items-center px-3 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 rounded-r-lg transition-colors clear-btn"
+                                    onclick="clearField('departure_city')"
+                                    title="Clear selection">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-icon">
+                        <label class="block text-gray-700 font-semibold mb-3">
+                            <i class="fas fa-map-marker-alt mr-2"></i> To
+                        </label>
+                        <div class="relative">
+                            {{ form.arrival_city }}
+                            <button type="button" 
+                                    class="absolute inset-y-0 right-0 flex items-center px-3 bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800 rounded-r-lg transition-colors clear-btn"
+                                    onclick="clearField('arrival_city')"
+                                    title="Clear selection">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="input-icon">
+                        <label class="block text-gray-700 font-semibold mb-3">
+                            <i class="fas fa-calendar mr-2"></i> Departure date
+                        </label>
+                        <div class="relative">
+                            {{ form.departure_date }}
+                            <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                                <i class="fas fa-calendar text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-end space-x-3">
+                        <button type="button" onclick="clearAllFields()" 
+                                class="flex-1 bg-gray-500 text-white px-4 py-3 rounded hover:bg-gray-600 transition">
+                            <i class="fas fa-times mr-2"></i> Clear All
+                        </button>
+                        <button type="submit" class="flex-1 search-btn">
+                            <i class="fas fa-search mr-2"></i> Search
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Search tips -->
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
+                        <div class="text-sm text-blue-800">
+                            <p class="font-semibold mb-2">Search tips:</p>
+                            <ul class="space-y-1">
+                                <li>Select both "From" and "To" cities to find available routes</li>
+                                <li>Choose a date to see schedules for that specific day</li>
+                                <li>If routes exist for your selection, you'll see detailed information</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Routes Section -->
+<section class="py-12">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-8">Popular Routes</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for route in popular_routes %}
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-bus text-blue-600 mr-3"></i>
+                            <div>
+                                <div class="font-semibold">{{ route.departure_city }}</div>
+                                <div class="text-sm text-gray-500">to</div>
+                                <div class="font-semibold">{{ route.arrival_city }}</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-arrow-right text-gray-400"></i>
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <i class="fas fa-route mr-2"></i>{{ route.distance }} km
+                        <i class="fas fa-clock mr-2 ml-3"></i>{{ route.estimated_time }}
+                    </div>
+                    <div class="mt-4 text-right">
+                        <div class="text-2xl font-bold text-blue-600">{{ route.base_price }} RUB</div>
+                        <div class="text-sm text-gray-500">per person</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .route-card {
+        transition: all 0.2s ease;
+    }
+    
+    .route-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Styles for form fields with clear buttons */
+    .input-icon .relative select {
+        padding-right: 45px !important;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: left 12px center;
+        background-size: 16px;
+        padding-left: 40px;
+    }
+    
+    .input-icon .relative .clear-btn {
+        border-left: 1px solid #e5e7eb;
+    }
+    
+    .input-icon .relative .clear-btn:hover {
+        background-color: #f3f4f6 !important;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Function to save form values to localStorage
+    function saveFormValues() {
+        const departure = document.getElementById('departure_city_select').value;
+        const arrival = document.getElementById('arrival_city_select').value;
+        const departureDate = document.getElementById('departure_date_select').value;
+        
+        localStorage.setItem('searchForm_departure', departure);
+        localStorage.setItem('searchForm_arrival', arrival);
+        localStorage.setItem('searchForm_departureDate', departureDate);
+    }
+    
+    // Function to restore form values from localStorage
+    function restoreFormValues() {
+        const departure = localStorage.getItem('searchForm_departure');
+        const arrival = localStorage.getItem('searchForm_arrival');
+        const departureDate = localStorage.getItem('searchForm_departureDate');
+        
+        if (departure) {
+            document.getElementById('departure_city_select').value = departure;
+        }
+        if (arrival) {
+            document.getElementById('arrival_city_select').value = arrival;
+        }
+        if (departureDate) {
+            document.getElementById('departure_date_select').value = departureDate;
+        }
+    }
+    
+    // Function to clear form field
+    function clearField(fieldName) {
+        const field = document.getElementById(fieldName + '_select');
+        if (field) {
+            field.value = '';
+            // Clear from localStorage as well
+            localStorage.removeItem('searchForm_' + fieldName);
+            if (fieldName === 'departure_city') {
+                localStorage.removeItem('searchForm_departure');
+            } else if (fieldName === 'arrival_city') {
+                localStorage.removeItem('searchForm_arrival');
+            } else if (fieldName === 'departure_date') {
+                localStorage.removeItem('searchForm_departureDate');
+            }
+        }
+    }
+    
+    // Function to clear all form values
+    function clearAllFields() {
+        clearField('departure_city');
+        clearField('arrival_city');
+        clearField('departure_date');
+    }
+    
+    // Save form values when fields change
+    document.getElementById('departure_city_select').addEventListener('change', saveFormValues);
+    document.getElementById('arrival_city_select').addEventListener('change', saveFormValues);
+    document.getElementById('departure_date_select').addEventListener('change', saveFormValues);
+    
+    // Simple form validation
+    document.querySelector('.search-form').addEventListener('submit', function(e) {
+        const departure = document.getElementById('departure_city_select').value;
+        const arrival = document.getElementById('arrival_city_select').value;
+        
+        // Validate that both cities are selected
+        if (!departure || !arrival) {
+            e.preventDefault();
+            alert('Please select both departure and arrival cities');
+            return false;
+        }
+        
+        if (departure === arrival) {
+            e.preventDefault();
+            alert('Departure and arrival cities cannot be the same');
+            return false;
+        }
+        
+        console.log('Searching for routes:', departure, 'to', arrival);
+    });
+    
+    // Restore form values when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        restoreFormValues();
+    });
+</script>
+{% endblock %}

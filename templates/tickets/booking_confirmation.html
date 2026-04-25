@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+
+{% block title %}Potwierdzenie rezerwacji - {{ booking.booking_reference }}{% endblock %}
+
+{% block content %}
+<!-- Success Header -->
+<section class="bg-green-600 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="text-center">
+            <i class="fas fa-check-circle text-6xl mb-4"></i>
+            <h1 class="text-3xl font-bold mb-2">Platnosc zakonczona pomyslnie!</h1>
+            <p class="opacity-90">
+                Twoja rezerwacja zostala potwierdzona. Numer rezerwacji: {{ booking.booking_reference }}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Confirmation Details -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Success Message -->
+            <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-600 text-2xl mr-4"></i>
+                    <div>
+                        <h2 class="text-lg font-semibold text-green-800 mb-2">Dziekujemy za zakup!</h2>
+                        <p class="text-green-700">
+                            Twoje bilety zostaly wyslane na adres email {{ booking.email }}. 
+                            Mozesz je równiez pobrac ponizej.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Summary -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">Podsumowanie rezerwacji</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-semibold mb-3">Informacje o kliencie</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="text-gray-500">Imie i nazwisko:</span> {{ booking.first_name }} {{ booking.last_name }}</p>
+                            <p><span class="text-gray-500">Email:</span> {{ booking.email }}</p>
+                            <p><span class="text-gray-500">Telefon:</span> {{ booking.phone|default:"Nie podano" }}</p>
+                            <p><span class="text-gray-500">Numer rezerwacji:</span> <strong>{{ booking.booking_reference }}</strong></p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold mb-3">Szczególy platnosci</h4>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="text-gray-500">Data platnosci:</span> {{ booking.updated_at|date:"d.m.Y H:i" }}</p>
+                            <p><span class="text-gray-500">Metoda platnosci:</span> Karta kredytowa</p>
+                            <p><span class="text-gray-500">Status:</span> <span class="text-green-600 font-semibold">Oplacone</span></p>
+                            <p><span class="text-gray-500">Kwota:</span> <strong>{{ booking.total_price|floatformat:2 }} PLN</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ticket Details -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <h3 class="text-xl font-bold mb-4">Szczególy biletów</h3>
+                
+                <div class="space-y-4">
+                    {% for ticket in tickets %}
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold text-lg mb-2">
+                                        {{ ticket.schedule.route.full_name }}
+                                    </h4>
+                                    
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                        <div>
+                                            <p class="text-gray-500">Odjazd</p>
+                                            <p class="font-semibold">{{ ticket.schedule.departure_time|date:"d.m.Y H:i" }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Przyjazd</p>
+                                            <p class="font-semibold">{{ ticket.schedule.arrival_time|date:"d.m.Y H:i" }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Autobus</p>
+                                            <p class="font-semibold">{{ ticket.schedule.bus.registration_number }}</p>
+                                        </div>
+                                        <div>
+                                            <p class="text-gray-500">Miejsce</p>
+                                            <p class="font-semibold">{{ ticket.seat_number }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-right">
+                                    <div class="text-2xl font-bold text-green-600 mb-2">
+                                        {{ ticket.price|floatformat:2 }} PLN
+                                    </div>
+                                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
+                                        Oplacone
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold mb-4">Dalsze kroki</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="{% url 'tickets:download_ticket_pdf' booking.id %}" 
+                       class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition font-semibold text-center">
+                        <i class="fas fa-download mr-2"></i> Pobierz bilety PDF
+                    </a>
+                    
+                    <button onclick="window.print()" 
+                            class="bg-gray-600 text-white py-3 px-6 rounded-lg hover:bg-gray-700 transition font-semibold">
+                        <i class="fas fa-print mr-2"></i> Drukuj bilety
+                    </button>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <h4 class="font-semibold mb-3">Wazne informacje</h4>
+                    <ul class="text-sm text-gray-600 space-y-2">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Przed odjazdem prosimy przybyc na przystanek 15 minut wczesniej</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Bilet prosze okazac kierowcy w formie drukowanej lub na telefonie</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Dokument tozsamosci jest wymagany podczas podrozy</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Zmiana rezerwacji jest mozliwa do 24h przed odjazdem</li>
+                    </ul>
+                </div>
+                
+                <div class="mt-6">
+                    <a href="{% url 'tickets:home' %}" 
+                       class="text-blue-600 hover:text-blue-700 transition font-semibold">
+                        <i class="fas fa-arrow-left mr-2"></i> Wroc do strony glównej
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Important Information -->
+<section class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-bold mb-4">Potrzebujesz pomocy?</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div>
+                        <i class="fas fa-phone text-blue-600 text-2xl mb-2"></i>
+                        <h4 class="font-semibold mb-2">Telefon</h4>
+                        <p class="text-gray-600">+48 123 456 789</p>
+                        <p class="text-sm text-gray-500">Pon - Pt: 8:00 - 20:00</p>
+                    </div>
+                    
+                    <div>
+                        <i class="fas fa-envelope text-blue-600 text-2xl mb-2"></i>
+                        <h4 class="font-semibold mb-2">Email</h4>
+                        <p class="text-gray-600">support@bustickets.pl</p>
+                        <p class="text-sm text-gray-500">Odpowiedz w 24h</p>
+                    </div>
+                    
+                    <div>
+                        <i class="fas fa-comments text-blue-600 text-2xl mb-2"></i>
+                        <h4 class="font-semibold mb-2">Chat</h4>
+                        <p class="text-gray-600">Chat online</p>
+                        <p class="text-sm text-gray-500">Dostepny 24/7</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-download PDF (optional)
+    function downloadTicket() {
+        const link = document.createElement('a');
+        link.href = '{% url "tickets:download_ticket_pdf" booking.id %}';
+        link.download = `ticket_{{ booking.booking_reference }}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    // Ask user if they want to download PDF
+    setTimeout(function() {
+        if (confirm('Czy chcesz pobrac bilety PDF teraz?')) {
+            downloadTicket();
+        }
+    }, 2000);
+    
+    // Track page view for analytics
+</script>
+{% endblock %}

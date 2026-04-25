@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}О нас - Система продажи автобусных билетов{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="bg-blue-600 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold mb-4">О нас</h1>
+            <p class="text-xl opacity-90">Ваша надежная партнерская компания в мире автобусных путешествий</p>
+        </div>
+    </div>
+</section>
+
+<!-- About Content -->
+<section class="py-16">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            <!-- Company Overview -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Наша компания</h2>
+                <div class="prose prose-lg max-w-none">
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Добро пожаловать в <strong>BusTickets</strong> — ведущую платформу для продажи автобусных билетов в регионе! 
+                        Мы работаем с 2015 года и помогаем тысячам пассажиров ежедневно находить и покупать билеты на удобные рейсы.
+                    </p>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Наша миссия — сделать автобусные путешествия доступными, комфортными и безопасными для каждого. 
+                        Мы сотрудничаем с лучшими перевозчиками региона, чтобы предложить вам широкий выбор маршрутов 
+                        по конкурентоспособным ценам.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="text-3xl font-bold text-blue-600 mb-2">500K+</div>
+                    <div class="text-gray-600">Довольных клиентов</div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="text-3xl font-bold text-green-600 mb-2">150+</div>
+                    <div class="text-gray-600">Направлений</div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="text-3xl font-bold text-purple-600 mb-2">50+</div>
+                    <div class="text-gray-600">Перевозчиков</div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <div class="text-3xl font-bold text-orange-600 mb-2">8 лет</div>
+                    <div class="text-gray-600">На рынке</div>
+                </div>
+            </div>
+
+            <!-- Our Values -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Наши ценности</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-shield-alt text-blue-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Безопасность</h3>
+                        <p class="text-gray-600">
+                            Все наши перевозчики имеют необходимые лицензии и страхования. 
+                            Мы гарантируем безопасность ваших путешествий.
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-clock text-green-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Пунктуальность</h3>
+                        <p class="text-gray-600">
+                            Мы строго следим за соблюдением расписания. 
+                            Среднее время опоздания наших рейсов не превышает 5 минут.
+                        </p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-heart text-purple-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Забота о клиентах</h3>
+                        <p class="text-gray-600">
+                            Наша служба поддержки работает 24/7. 
+                            Мы всегда готовы помочь вам с любым вопросом.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Our Services -->
+            <div class="bg-white rounded-lg shadow-lg p-8 mb-12">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Наши услуги</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="flex items-start">
+                        <i class="fas fa-ticket-alt text-blue-600 text-xl mt-1 mr-4"></i>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Онлайн-продажа билетов</h3>
+                            <p class="text-gray-600">
+                                Удобная система бронирования с возможностью выбора мест и мгновенным подтверждением.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-mobile-alt text-green-600 text-xl mt-1 mr-4"></i>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Мобильное приложение</h3>
+                            <p class="text-gray-600">
+                                Бронируйте билеты в любом месте с нашего удобного мобильного приложения.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-bus text-purple-600 text-xl mt-1 mr-4"></i>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Широкий выбор маршрутов</h3>
+                            <p class="text-gray-600">
+                                Более 150 направлений по всему региону с регулярными рейсами.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <i class="fas fa-headset text-orange-600 text-xl mt-1 mr-4"></i>
+                        <div>
+                            <h3 class="text-xl font-semibold mb-2">Поддержка 24/7</h3>
+                            <p class="text-gray-600">
+                                Наша команда всегда готова помочь вам с любыми вопросами.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Section -->
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Наша команда</h2>
+                <div class="text-center mb-8">
+                    <p class="text-gray-600 text-lg">
+                        Наша команда состоит из профессионалов с многолетним опытом в транспортной индустрии. 
+                        Мы работаем вместе, чтобы предоставить вам лучший сервис.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <div class="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <i class="fas fa-user-tie text-gray-400 text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Александр Петров</h3>
+                        <p class="text-gray-600 mb-2">Генеральный директор</p>
+                        <p class="text-sm text-gray-500">15 лет опыта в транспортной отрасли</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <i class="fas fa-user-tie text-gray-400 text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Мария Иванова</h3>
+                        <p class="text-gray-600 mb-2">Операционный директор</p>
+                        <p class="text-sm text-gray-500">10 лет опыта в логистике</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                            <i class="fas fa-user-tie text-gray-400 text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-2">Дмитрий Сидоров</h3>
+                        <p class="text-gray-600 mb-2">Технический директор</p>
+                        <p class="text-sm text-gray-500">12 лет опыта в IT</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="bg-blue-600 text-white py-12">
+    <div class="container mx-auto px-4 text-center">
+        <h2 class="text-3xl font-bold mb-4">Готовы отправиться в путешествие?</h2>
+        <p class="text-xl mb-8">Найдите и забронируйте билеты на удобные рейсы прямо сейчас!</p>
+        <a href="{% url 'tickets:home' %}" 
+           class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition inline-block">
+            <i class="fas fa-search mr-2"></i>Найти билеты
+        </a>
+    </div>
+</section>
+{% endblock %}

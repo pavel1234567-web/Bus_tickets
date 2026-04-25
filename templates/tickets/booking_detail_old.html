@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+
+{% block title %}Szczególy rezerwacji - {{ booking.booking_reference }}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="bg-blue-600 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold mb-2">Szczególy rezerwacji</h1>
+                <p class="opacity-90">
+                    <i class="fas fa-ticket-alt mr-2"></i>
+                    Numer rezerwacji: {{ booking.booking_reference }}
+                </p>
+            </div>
+            <a href="{% url 'tickets:home' %}" 
+               class="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition">
+                <i class="fas fa-arrow-left mr-2"></i> Strona glówna
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Booking Details -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Booking Info -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">Informacje o rezerwacji</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Numer rezerwacji</p>
+                            <p class="font-semibold">{{ booking.booking_reference }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Data rezerwacji</p>
+                            <p class="font-semibold">{{ booking.created_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Imie i nazwisko</p>
+                            <p class="font-semibold">{{ booking.passenger_name }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Email</p>
+                            <p class="font-semibold">{{ booking.email }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Telefon</p>
+                            <p class="font-semibold">{{ booking.phone|default:"Nie podano" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Status platnosci</p>
+                            <p class="font-semibold">
+                                {% if booking.is_paid %}
+                                    <span class="text-green-600"><i class="fas fa-check-circle mr-1"></i> Oplacone</span>
+                                {% else %}
+                                    <span class="text-orange-600"><i class="fas fa-clock mr-1"></i> Oczekuje na platnosc</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tickets -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-4">Bilety</h2>
+                    
+                    <div class="space-y-4">
+                        {% for ticket in tickets %}
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h3 class="font-semibold text-lg mb-2">
+                                            {{ ticket.schedule.route.full_name }}
+                                        </h3>
+                                        
+                                        <div class="grid grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                                <p class="text-gray-500">Odjazd</p>
+                                                <p class="font-semibold">{{ ticket.schedule.departure_time|date:"d.m.Y H:i" }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Przyjazd</p>
+                                                <p class="font-semibold">{{ ticket.schedule.arrival_time|date:"d.m.Y H:i" }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Autobus</p>
+                                                <p class="font-semibold">{{ ticket.schedule.bus.registration_number }}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500">Miejsce</p>
+                                                <p class="font-semibold">{{ ticket.seat_number }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold text-blue-600 mb-2">
+                                            {{ ticket.price|floatformat:2 }} PLN
+                                        </div>
+                                        <div class="mb-2">
+                                            <span class="px-3 py-1 rounded-full text-sm font-semibold
+                                                {% if ticket.status == 'paid' %}bg-green-100 text-green-800{% endif %}
+                                                {% if ticket.status == 'booked' %}bg-orange-100 text-orange-800{% endif %}
+                                                {% if ticket.status == 'available' %}bg-gray-100 text-gray-800{% endif %}">
+                                                {{ ticket.get_status_display }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div>
+                <!-- Price Summary -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h3 class="text-lg font-bold mb-4">Podsumowanie ceny</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Bilety ({{ tickets|length }})</span>
+                            <span>{{ booking.total_price|floatformat:2 }} PLN</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Oplaty serwisowe</span>
+                            <span>0.00 PLN</span>
+                        </div>
+                        <div class="border-t pt-2 mt-2">
+                            <div class="flex justify-between font-bold text-lg">
+                                <span>Razem</span>
+                                <span class="text-blue-600">{{ booking.total_price|floatformat:2 }} PLN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Payment Status -->
+                {% if not booking.is_paid %}
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h3 class="text-lg font-bold mb-4">Platnosc</h3>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2">
+                                Rezerwacja jest wazna przez 15 minut. Prosze dokonac platnosci w tym czasie.
+                            </p>
+                            <div class="bg-orange-50 border border-orange-200 rounded p-3">
+                                <p class="text-sm text-orange-800">
+                                    <i class="fas fa-exclamation-triangle mr-1"></i>
+                                    Czas do wygaSniecia rezerwacji: <span id="countdown">15:00</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <form method="POST" action="{% url 'tickets:process_payment' booking.id %}" id="payment-form">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    id="payment-btn"
+                                    class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition font-semibold">
+                                <i class="fas fa-credit-card mr-2"></i> Dokonaj platnosci
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+                        <h3 class="text-lg font-bold mb-2 text-green-800">
+                            <i class="fas fa-check-circle mr-2"></i> Platnosc zakonczona
+                        </h3>
+                        <p class="text-green-700 mb-4">
+                            Twoja rezerwacja zostala oplacone. Bilety zostaly wyslane na adres email.
+                        </p>
+                        <a href="{% url 'tickets:download_ticket_pdf' booking.id %}" 
+                           class="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition font-semibold inline-block text-center">
+                            <i class="fas fa-download mr-2"></i> Pobierz bilety PDF
+                        </a>
+                    </div>
+                {% endif %}
+                
+                <!-- Actions -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold mb-4">Akcje</h3>
+                    
+                    <div class="space-y-2">
+                        <button onclick="window.print()" 
+                                class="w-full bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition">
+                            <i class="fas fa-print mr-2"></i> Drukuj rezerwacje
+                        </button>
+                        
+                        <a href="mailto:?subject=Rezerwacja%20{{ booking.booking_reference }}&body=Sprawdz%20moja%20rezerwacje:%20{{ request.build_absolute_uri }}" 
+                           class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition inline-block text-center">
+                            <i class="fas fa-envelope mr-2"></i> Udostepnij email
+                        </a>
+                        
+                        {% if not booking.is_paid %}
+                            <button onclick="cancelBooking()" 
+                                    class="w-full bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition">
+                                <i class="fas fa-times mr-2"></i> Anuluj rezerwacje
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Countdown timer
+    let timeLeft = 15 * 60; // 15 minutes in seconds
+    
+    function updateCountdown() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        
+        const countdownElement = document.getElementById('countdown');
+        if (countdownElement) {
+            countdownElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        if (timeLeft <= 0) {
+            // Time expired - redirect or show message
+            window.location.reload();
+        } else {
+            timeLeft--;
+            setTimeout(updateCountdown, 1000);
+        }
+    }
+    
+    // Start countdown if payment is pending
+    updateCountdown();
+    
+    // Payment form submission
+    document.getElementById('payment-form').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('payment-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Przetwarzanie platnosci...';
+    });
+    
+    // Cancel booking function
+    function cancelBooking() {
+        if (confirm('Czy na pewno chcesz anulowac te rezerwacje? Tej czynnosci nie mozna cofnac.')) {
+            // In real implementation, this would make an API call
+        }
+    }
+    
+    // Auto-refresh for payment status
+    setInterval(function() {
+        // In real implementation, this would check payment status
+    }, 10000); // Check every 10 seconds
+</script>
+{% endblock %}

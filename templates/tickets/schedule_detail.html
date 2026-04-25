@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+
+{% block title %}Wybór miejsc - {{ schedule.route.full_name }}{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="bg-blue-600 text-white py-8">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold mb-2">Wybór miejsc</h1>
+                <p class="opacity-90">
+                    <i class="fas fa-route mr-2"></i>
+                    {{ schedule.route.full_name }}
+                    <span class="ml-4"><i class="fas fa-calendar mr-2"></i>{{ schedule.departure_time|date:"d.m.Y H:i" }}</span>
+                </p>
+            </div>
+            <a href="{% url 'tickets:search_routes' %}?departure_city={{ schedule.route.departure_city }}&arrival_city={{ schedule.route.arrival_city }}&departure_date={{ schedule.departure_time|date:"Y-m-d" }}" 
+               class="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition">
+                <i class="fas fa-arrow-left mr-2"></i> Wroc do wyników
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Schedule Info -->
+<section class="py-6 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="font-semibold text-lg mb-2">Informacje o podrozy</h3>
+                    <div class="space-y-2 text-gray-600">
+                        <p><i class="fas fa-bus mr-2"></i>Autobus: {{ schedule.bus.registration_number }}</p>
+                        <p><i class="fas fa-tag mr-2"></i>Typ: {{ schedule.bus.get_bus_type_display }}</p>
+                        <p><i class="fas fa-chair mr-2"></i>Miejsc: {{ schedule.bus.total_seats }}</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-2">Czas podrozy</h3>
+                    <div class="space-y-2 text-gray-600">
+                        <p><i class="fas fa-clock mr-2"></i>Odjazd: {{ schedule.departure_time|date:"H:i" }}</p>
+                        <p><i class="fas fa-clock mr-2"></i>Przyjazd: {{ schedule.arrival_time|date:"H:i" }}</p>
+                        <p><i class="fas fa-hourglass-half mr-2"></i>Czas: 
+                            {% with travel_time=schedule.arrival_time|timeuntil:schedule.departure_time %}
+                                {{ travel_time }}
+                            {% endwith %}
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-2">Cena</h3>
+                    <div class="text-3xl font-bold text-blue-600">
+                        {{ schedule.current_price|floatformat:2 }} PLN
+                        <span class="text-sm text-gray-500 font-normal">od miejsca</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Seat Selection -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold mb-6">Wybierz miejsca</h2>
+            
+            <!-- Legend -->
+            <div class="flex flex-wrap gap-4 mb-6">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-green-500 rounded mr-2"></div>
+                    <span class="text-sm">Dostepne</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-blue-500 rounded mr-2"></div>
+                    <span class="text-sm">Wybrane</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-orange-500 rounded mr-2"></div>
+                    <span class="text-sm">Zarezerwowane</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-8 h-8 bg-red-500 rounded mr-2"></div>
+                    <span class="text-sm">Sprzedane</span>
+                </div>
+            </div>
+            
+            <!-- Bus Layout -->
+            <div class="mb-8">
+                <div class="text-center mb-4">
+                    <div class="inline-block bg-gray-800 text-white px-4 py-2 rounded">
+                        <i class="fas fa-road mr-2"></i> Kierowca
+                    </div>
+                </div>
+                
+                <form method="POST" action="{% url 'tickets:seat_selection' schedule.id %}" id="seat-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="selected_seats" id="selected-seats" value="[]">
+                    
+                    <div class="max-w-2xl mx-auto">
+                        {% for row in seat_layout %}
+                            <div class="flex justify-center mb-2">
+                                {% for seat in row %}
+                                    {% if seat %}
+                                        <button type="button" 
+                                                onclick="toggleSeat(this, '{{ seat.number }}')"
+                                                class="seat-btn w-12 h-12 m-1 rounded text-white font-semibold text-sm
+                                                       {% if seat.status == 'available' %}seat-available hover:bg-green-600{% endif %}
+                                                       {% if seat.status == 'booked' %}seat-booked cursor-not-allowed{% endif %}
+                                                       {% if seat.status == 'paid' %}seat-paid cursor-not-allowed{% endif %}"
+                                                {% if seat.status != 'available' %}disabled{% endif %}>
+                                            {{ seat.number }}
+                                        </button>
+                                    {% else %}
+                                        <div class="w-12 h-12 m-1"></div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Selected Seats Display -->
+                    <div id="selected-seats-display" class="hidden text-center mb-6">
+                        <p class="text-lg font-semibold text-blue-600"></p>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="text-center">
+                        <button type="submit" 
+                                id="submit-btn"
+                                class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                disabled>
+                            <i class="fas fa-shopping-cart mr-2"></i> Rezerwuj wybrane miejsca
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Bus Amenities -->
+            <div class="border-t pt-6">
+                <h3 class="font-semibold text-lg mb-4">Udogodnienia w autobusie</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {% if schedule.bus.has_ac %}
+                        <div class="text-center p-3 bg-blue-50 rounded">
+                            <i class="fas fa-snowflake text-blue-600 text-2xl mb-2"></i>
+                            <p class="text-sm">Klimatyzacja</p>
+                        </div>
+                    {% endif %}
+                    {% if schedule.bus.has_wifi %}
+                        <div class="text-center p-3 bg-green-50 rounded">
+                            <i class="fas fa-wifi text-green-600 text-2xl mb-2"></i>
+                            <p class="text-sm">WiFi</p>
+                        </div>
+                    {% endif %}
+                    {% if schedule.bus.has_toilet %}
+                        <div class="text-center p-3 bg-purple-50 rounded">
+                            <i class="fas fa-toilet text-purple-600 text-2xl mb-2"></i>
+                            <p class="text-sm">Toaleta</p>
+                        </div>
+                    {% endif %}
+                    <div class="text-center p-3 bg-orange-50 rounded">
+                        <i class="fas fa-suitcase text-orange-600 text-2xl mb-2"></i>
+                        <p class="text-sm">Bagaz</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Terms and Conditions -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="bg-gray-50 rounded-lg p-6">
+            <h3 class="font-semibold text-lg mb-4">Warunki rezerwacji</h3>
+            <div class="text-sm text-gray-600 space-y-2">
+                <p>Rezerwacja jest wazna przez 15 minut od momentu wyboru miejsc.</p>
+                <p>Po tym czasie miejsca zostana automatycznie zwolnione.</p>
+                <p>Platnosci mozna dokonac online karta kredytowa lub przelewem bankowym.</p>
+                <p>Anulowanie rezerwacji jest mozliwe do 24h przed odjazdem.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let selectedSeats = [];
+    
+    function toggleSeat(button, seatNumber) {
+        const seatNum = parseInt(seatNumber);
+        const seatStatus = button.dataset.status || 'available';
+        
+        if (seatStatus === 'paid' || seatStatus === 'booked') {
+            return; // Cannot select paid or booked seats
+        }
+        
+        if (button.classList.contains('seat-selected')) {
+            // Deselect seat
+            button.classList.remove('seat-selected', 'bg-blue-500');
+            button.classList.add('seat-available', 'bg-green-500');
+            selectedSeats = selectedSeats.filter(seat => seat !== seatNum);
+        } else {
+            // Select seat
+            button.classList.remove('seat-available', 'bg-green-500');
+            button.classList.add('seat-selected', 'bg-blue-500');
+            selectedSeats.push(seatNum);
+        }
+        
+        // Update hidden input
+        document.getElementById('selected-seats').value = JSON.stringify(selectedSeats);
+        
+        // Update display
+        updateSelectedSeatsDisplay();
+        
+        // Enable/disable submit button
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = selectedSeats.length === 0;
+    }
+    
+    function updateSelectedSeatsDisplay() {
+        const displayElement = document.getElementById('selected-seats-display');
+        const textElement = displayElement.querySelector('p');
+        
+        if (selectedSeats.length > 0) {
+            const sortedSeats = [...selectedSeats].sort((a, b) => a - b);
+            textElement.textContent = `Wybrane miejsca: ${sortedSeats.join(', ')}`;
+            displayElement.classList.remove('hidden');
+            
+            // Calculate total price
+            const pricePerSeat = parseFloat("{{ schedule.current_price }}");
+            const totalPrice = (selectedSeats.length * pricePerSeat).toFixed(2);
+            textElement.innerHTML += `<br><span class="text-sm">Cena calkowita: ${totalPrice} PLN</span>`;
+        } else {
+            displayElement.classList.add('hidden');
+        }
+    }
+    
+    // Form submission
+    document.getElementById('seat-form').addEventListener('submit', function(e) {
+        if (selectedSeats.length === 0) {
+            e.preventDefault();
+            alert('Prosz wybrac co najmniej jedno miejsce.');
+            return false;
+        }
+        
+        // Show loading state
+        const submitBtn = document.getElementById('submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Przetwarzanie...';
+    });
+    
+    // Auto-refresh seat availability
+    setInterval(function() {
+        // In real implementation, this would fetch updated seat status
+    }, 30000);
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            // Clear selection
+            document.querySelectorAll('.seat-selected').forEach(seat => {
+                seat.classList.remove('seat-selected', 'bg-blue-500');
+                seat.classList.add('seat-available', 'bg-green-500');
+            });
+            selectedSeats = [];
+            document.getElementById('selected-seats').value = JSON.stringify(selectedSeats);
+            updateSelectedSeatsDisplay();
+            document.getElementById('submit-btn').disabled = true;
+        }
+    });
+</script>
+{% endblock %}

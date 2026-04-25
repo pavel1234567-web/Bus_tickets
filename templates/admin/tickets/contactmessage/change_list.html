@@ -1,0 +1,373 @@
+{% extends "admin/change_list.html" %}
+{% load i18n static admin_list %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .contact-messages-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .contact-messages-header {
+        color: white;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .contact-messages-header h2 {
+        margin: 0;
+        font-size: 28px;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .contact-messages-header p {
+        margin: 8px 0 0 0;
+        opacity: 0.9;
+        font-size: 16px;
+    }
+    
+    .results {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    
+    #result_list {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+    
+    #result_list thead {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    #result_list th {
+        padding: 16px 12px;
+        text-align: left;
+        font-weight: 600;
+        color: #2c3e50;
+        border-bottom: 2px solid #dee2e6;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    #result_list th a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    #result_list th a:hover {
+        color: #667eea;
+    }
+    
+    #result_list td {
+        padding: 14px 12px;
+        border-bottom: 1px solid #f1f3f4;
+        vertical-align: middle;
+    }
+    
+    #result_list tbody tr {
+        transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+    
+    #result_list tbody tr:hover {
+        background-color: #f8f9fa;
+        transform: translateX(2px);
+    }
+    
+    .field-name a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: color 0.3s ease;
+    }
+    
+    .field-name a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+    }
+    
+    .field-email {
+        color: #6c757d;
+        font-size: 14px;
+    }
+    
+    .field-subject {
+        color: #2c3e50;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .field-status {
+        text-align: center;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .status-badge:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    
+    .status-new {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        color: white;
+    }
+    
+    .status-in-progress {
+        background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+        color: #2c3e50;
+    }
+    
+    .status-answered {
+        background: linear-gradient(135deg, #48dbfb 0%, #0abde3 100%);
+        color: white;
+    }
+    
+    .status-closed {
+        background: linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%);
+        color: #2c3e50;
+    }
+    
+    .field-created_at {
+        color: #6c757d;
+        font-size: 13px;
+        font-family: 'Courier New', monospace;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+    
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+    
+    .empty-state-text {
+        font-size: 18px;
+        margin-bottom: 8px;
+    }
+    
+    .empty-state-subtext {
+        font-size: 14px;
+        opacity: 0.8;
+    }
+    
+    .paginator {
+        background: white;
+        padding: 20px;
+        border-radius: 0 0 12px 12px;
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .paginator a, .paginator .this-page {
+        display: inline-block;
+        padding: 8px 12px;
+        margin: 0 4px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .paginator a {
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+    }
+    
+    .paginator a:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+        transform: translateY(-1px);
+    }
+    
+    .paginator .this-page {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .new-messages-count {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-left: 20px;
+        box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block result_list %}
+    {% if cl.formset %}
+        {{ cl.formset.management_form }}
+    {% endif %}
+    
+    <div class="contact-messages-container">
+        <div class="contact-messages-header">
+            <h2>📬 Сообщения обратной связи</h2>
+            <p>Управление сообщениями от пользователей</p>
+        </div>
+    </div>
+    
+    <div class="results">
+        <table id="result_list">
+            <thead>
+                <tr>
+                    <th scope="col" class="sortable column-name">
+                        {% if cl.order_field == 'name' %}
+                            <a href="?o={{ cl.order_field_prefix }}-name">
+                                <span>Имя</span>
+                                <span>↓</span>
+                            </a>
+                        {% else %}
+                            <a href="?o={{ cl.order_field_prefix }}name">
+                                <span>Имя</span>
+                                <span>↕</span>
+                            </a>
+                        {% endif %}
+                    </th>
+                    <th scope="col" class="sortable column-email">
+                        {% if cl.order_field == 'email' %}
+                            <a href="?o={{ cl.order_field_prefix }}-email">
+                                <span>Email</span>
+                                <span>↓</span>
+                            </a>
+                        {% else %}
+                            <a href="?o={{ cl.order_field_prefix }}email">
+                                <span>Email</span>
+                                <span>↕</span>
+                            </a>
+                        {% endif %}
+                    </th>
+                    <th scope="col" class="sortable column-subject">
+                        {% if cl.order_field == 'subject' %}
+                            <a href="?o={{ cl.order_field_prefix }}-subject">
+                                <span>Тема</span>
+                                <span>↓</span>
+                            </a>
+                        {% else %}
+                            <a href="?o={{ cl.order_field_prefix }}subject">
+                                <span>Тема</span>
+                                <span>↕</span>
+                            </a>
+                        {% endif %}
+                    </th>
+                    <th scope="col" class="sortable column-status">
+                        {% if cl.order_field == 'status' %}
+                            <a href="?o={{ cl.order_field_prefix }}-status">
+                                <span>Статус</span>
+                                <span>↓</span>
+                            </a>
+                        {% else %}
+                            <a href="?o={{ cl.order_field_prefix }}status">
+                                <span>Статус</span>
+                                <span>↕</span>
+                            </a>
+                        {% endif %}
+                    </th>
+                    <th scope="col" class="sortable column-created_at">
+                        {% if cl.order_field == 'created_at' %}
+                            <a href="?o={{ cl.order_field_prefix }}-created_at">
+                                <span>Дата создания</span>
+                                <span>↓</span>
+                            </a>
+                        {% else %}
+                            <a href="?o={{ cl.order_field_prefix }}created_at">
+                                <span>Дата создания</span>
+                                <span>↕</span>
+                            </a>
+                        {% endif %}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in cl.result_list %}
+                <tr class="{% cycle 'row1' 'row2' %}">
+                    <td class="field-name">
+                        <a href="{{ obj.pk }}/change/">{{ obj.name }}</a>
+                    </td>
+                    <td class="field-email">
+                        {{ obj.email }}
+                    </td>
+                    <td class="field-subject">
+                        {{ obj.subject|truncatechars:50 }}
+                    </td>
+                    <td class="field-status">
+                        {% if obj.status == 'new' %}
+                            <span class="status-badge status-new">🔔 Новое</span>
+                        {% elif obj.status == 'in_progress' %}
+                            <span class="status-badge status-in-progress">⚡ В обработке</span>
+                        {% elif obj.status == 'answered' %}
+                            <span class="status-badge status-answered">✅ Отвечено</span>
+                        {% else %}
+                            <span class="status-badge status-closed">🔒 Закрыто</span>
+                        {% endif %}
+                    </td>
+                    <td class="field-created_at">
+                        {{ obj.created_at|date:"d.m.Y H:i" }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <div class="empty-state-text">Сообщений не найдено</div>
+                            <div class="empty-state-subtext">Пока нет ни одного сообщения от пользователей</div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if cl.result_count %}
+        <div class="paginator">
+            {% if cl.result_count > cl.list_per_page %}
+                {% for i in cl.page_range %}
+                    {% if i == cl.page_num %}
+                        <span class="this-page">{{ i }}</span>
+                    {% else %}
+                        <a href="?page={{ i }}" class="page">{{ i }}</a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,614 @@
+{% extends "admin/change_list.html" %}
+{% load i18n static admin_list %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    .booking-list-container {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .booking-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .booking-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+    }
+    
+    .booking-stats {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+    
+    .stat-item {
+        background: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        border-left: 4px solid #007cba;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .stat-label {
+        font-size: 12px;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .stat-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .booking-filters {
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .results-table {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .results-table table {
+        margin: 0;
+        border-collapse: collapse;
+        width: 100%;
+    }
+    
+    .results-table th {
+        background: #007cba;
+        color: white;
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 500;
+        border-bottom: 2px solid #005a8b;
+    }
+    
+    .results-table th a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+    }
+    
+    .results-table th a:hover {
+        text-decoration: underline;
+    }
+    
+    .results-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e9ecef;
+        vertical-align: middle;
+        text-align: left;
+        white-space: nowrap;
+    }
+    
+    .results-table td:nth-child(1) {
+        text-align: center;
+        width: 40px;
+    }
+    
+    .results-table td:nth-child(2) {
+        text-align: center;
+        width: 60px;
+        font-weight: 600;
+    }
+    
+    .results-table td:nth-child(3) {
+        width: 140px;
+    }
+    
+    .results-table td:nth-child(4) {
+        width: 160px;
+    }
+    
+    .results-table td:nth-child(5) {
+        width: 180px;
+    }
+    
+    .results-table td:nth-child(6) {
+        width: 120px;
+    }
+    
+    .results-table td:nth-child(7) {
+        width: 100px;
+        text-align: center;
+    }
+    
+    .results-table td:nth-child(8) {
+        width: 100px;
+        text-align: center;
+    }
+    
+    .results-table td:nth-child(9) {
+        width: 100px;
+        text-align: right;
+        font-weight: 600;
+    }
+    
+    .results-table td:nth-child(10) {
+        width: 140px;
+        text-align: center;
+    }
+    
+    .results-table td:nth-child(11) {
+        width: 160px;
+        text-align: center;
+    }
+    
+    .results-table tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+    
+    .results-table tr:hover {
+        background: #e3f2fd;
+        transition: background-color 0.2s ease;
+    }
+    
+    .results-table tr.old-booking {
+        background: #fff3cd !important;
+        border-left: 4px solid #ffc107;
+    }
+    
+    .results-table tr.old-booking:hover {
+        background: #ffeaa7 !important;
+    }
+    
+    .route-info {
+        line-height: 1.3;
+    }
+    
+    .route-info small {
+        color: #6c757d;
+        font-size: 11px;
+    }
+    
+    .date-info {
+        line-height: 1.3;
+    }
+    
+    .date-info small {
+        color: #007cba;
+        font-weight: 500;
+        font-size: 11px;
+    }
+    
+    .warning-badge {
+        background: #ff6b6b;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: 600;
+        margin-top: 4px;
+        display: inline-block;
+        animation: pulse 2s infinite;
+    }
+    
+    .ok-badge {
+        background: #28a745;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .error-badge {
+        background: #dc3545;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .paid-badge {
+        background: #17a2b8;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    .no-data-badge {
+        background: #6c757d;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 10px;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+    
+    .additional-info {
+        line-height: 1.4;
+        font-size: 12px;
+        color: #495057;
+    }
+    
+    .additional-info small {
+        display: block;
+        margin-bottom: 2px;
+    }
+    
+    .booking-reference {
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        color: #007cba;
+        background: #e3f2fd;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+    
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .status-paid {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-cancelled {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .status-expired {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+    }
+    
+    .action-btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-view {
+        background: #007cba;
+        color: white;
+    }
+    
+    .btn-view:hover {
+        background: #005a8b;
+        color: white;
+    }
+    
+    .btn-edit {
+        background: #28a745;
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background: #1e7e34;
+        color: white;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #6c757d;
+    }
+    
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+    
+    .waiting-time-info {
+        text-align: center;
+    }
+    
+    .waiting-time-info small {
+        display: block;
+        font-size: 10px;
+        color: #6c757d;
+        margin-top: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block result_list %}
+    {% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+    
+    <div class="booking-list-container">
+        <div class="booking-header">
+            <h1 class="booking-title">Управление бронированиями</h1>
+            <div class="booking-stats">
+                <div class="stat-item">
+                    <div class="stat-label">Всего</div>
+                    <div class="stat-value">{{ cl.result_count }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Выбрано</div>
+                    <div class="stat-value" id="selected-count">0</div>
+                </div>
+            </div>
+        </div>
+        
+        {% if cl.result_list %}
+            <div class="results-table">
+                <table id="result_list" aria-label="Список бронирований">
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                <input type="checkbox" id="action-toggle" aria-label="Выбрать все">
+                            </th>
+                            <th scope="col">
+                                <a href="?o=1">ID</a>
+                            </th>
+                            <th scope="col">
+                                <a href="?o=2">Номер бронирования</a>
+                            </th>
+                            <th scope="col">
+                                <a href="?o=3">Пассажир</a>
+                            </th>
+                            <th scope="col">
+                                <a href="?o=4">Маршрут</a>
+                            </th>
+                            <th scope="col">
+                                <a href="?o=5">Дата</a>
+                            </th>
+                            <th scope="col">
+                                <a href="?o=6">Статус</a>
+                            </th>
+                            <th scope="col">Время ожидания</th>
+                            <th scope="col">
+                                <a href="?o=7">Цена</a>
+                            </th>
+                            <th scope="col">Доп. информация</th>
+                            <th scope="col">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in cl.result_list %}
+                            {% with booking.created_at|date:"U" as booking_timestamp %}
+                            {% now "U" as current_time %}
+                            <tr class="{% cycle 'row1' 'row2' %} {% if not booking.is_paid and booking_timestamp %}old-booking-check{% endif %}" data-booking-id="{{ booking.pk }}" data-booking-time="{{ booking_timestamp }}" data-current-time="{{ current_time }}">
+                                <td>
+                                    <input type="checkbox" name="_selected_action" value="{{ booking.pk }}" class="action-select" aria-label="Выбрать бронирование {{ booking.booking_reference }}">
+                                </td>
+                                <td>
+                                    <strong>{{ booking.pk }}</strong>
+                                </td>
+                                <td>
+                                    <span class="booking-reference">{{ booking.booking_reference }}</span>
+                                </td>
+                                <td>
+                                    {{ booking.passenger_name|default:"-" }}
+                                </td>
+                                <td>
+                                    {% with booking.tickets.first as first_ticket %}
+                                        {% if first_ticket and first_ticket.schedule %}
+                                            <div class="route-info">
+                                                <strong>{{ first_ticket.schedule.route.departure_city }} → {{ first_ticket.schedule.route.arrival_city }}</strong><br>
+                                                <small>{{ first_ticket.schedule.route.distance|default:"-" }} км | {{ first_ticket.schedule.route.estimated_time|default:"-" }}</small><br>
+                                                <small>Рейс: {{ first_ticket.schedule.departure_time|date:"H:i" }}</small>
+                                            </div>
+                                        {% else %}
+                                            <div class="route-info">
+                                                <strong>-</strong><br>
+                                                <small>Нет данных о маршруте</small>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td>
+                                    {% if booking.created_at %}
+                                        <div class="date-info">
+                                            <strong>{{ booking.created_at|date:"d.m.Y H:i" }}</strong><br>
+                                            <small>{{ booking.created_at|date:"l" }}</small>
+                                        </div>
+                                    {% else %}
+                                        <div class="date-info">
+                                            <strong>-</strong><br>
+                                            <small>Нет даты</small>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if booking.is_paid %}
+                                        <span class="status-badge status-paid">Оплачено</span>
+                                    {% else %}
+                                        <span class="status-badge status-pending">Ожидает</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="waiting-time-info">
+                                        {% if not booking.is_paid and booking.created_at %}
+                                            <span class="time-status" data-booking-time="{{ booking_timestamp }}" data-current-time="{{ current_time }}">
+                                                <span class="status-badge">Расчет...</span>
+                                                <small>Проверка времени</small>
+                                            </span>
+                                        {% elif booking.is_paid %}
+                                            <span class="paid-badge">Оплачено</span>
+                                            <small>Оплачено</small>
+                                        {% else %}
+                                            <span class="no-data-badge">Нет данных</span>
+                                            <small>Нет данных</small>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <strong>{{ booking.total_price|default:"0" }} грн</strong>
+                                </td>
+                                <td>
+                                    <div class="additional-info">
+                                        {% with booking.tickets.first as first_ticket %}
+                                            {% if first_ticket and first_ticket.schedule %}
+                                                <small>Отправление: {{ first_ticket.schedule.departure_time|date:"H:i" }}</small>
+                                                {% if booking.tickets.count %}
+                                                    <small>Места: 
+                                                    {% for ticket in booking.tickets.all %}
+                                                        {{ ticket.seat_number }}{% if not forloop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                    </small>
+                                                {% endif %}
+                                                <small>Билетов: {{ booking.tickets.count }}</small>
+                                            {% else %}
+                                                <small>Нет данных</small>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <a href="{{ booking.pk }}/change/" class="action-btn btn-edit" aria-label="Изменить бронирование {{ booking.booking_reference }}">Изменить</a>
+                                        <a href="{{ booking.pk }}/" class="action-btn btn-view" aria-label="Просмотр бронирования {{ booking.booking_reference }}">Просмотр</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <h3>Нет бронирований</h3>
+                <p>На данный момент нет ни одного бронирования в системе.</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    {% if action_form and actions_on_bottom and cl.show_admin_actions %}{% admin_actions %}{% endif %}
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const actionToggle = document.getElementById('action-toggle');
+    const actionSelects = document.querySelectorAll('.action-select');
+    const selectedCount = document.getElementById('selected-count');
+    
+    function updateSelectedCount() {
+        const count = document.querySelectorAll('.action-select:checked').length;
+        if (selectedCount) {
+            selectedCount.textContent = count;
+        }
+    }
+    
+    // Обработчик для "выбрать все"
+    if (actionToggle) {
+        actionToggle.addEventListener('change', function() {
+            actionSelects.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+            updateSelectedCount();
+        });
+    }
+    
+    // Обработчики для индивидуальных чекбоксов
+    actionSelects.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            updateSelectedCount();
+            
+            // Обновляем состояние "выбрать все"
+            if (actionToggle) {
+                const allChecked = Array.from(actionSelects).every(cb => cb.checked);
+                const someChecked = Array.from(actionSelects).some(cb => cb.checked);
+                actionToggle.checked = allChecked;
+                actionToggle.indeterminate = someChecked && !allChecked;
+            }
+        });
+    });
+    
+    // Инициализация счетчика
+    updateSelectedCount();
+// Расчет времени ожидания для бронирований
+    function updateWaitingTimes() {
+        const timeStatusElements = document.querySelectorAll('.time-status');
+        
+        timeStatusElements.forEach(element => {
+            const bookingTime = parseInt(element.dataset.bookingTime);
+            const currentTime = parseInt(element.dataset.currentTime);
+            
+            if (bookingTime && currentTime) {
+                const timeDiff = currentTime - bookingTime; // разница в секундах
+                const minutesAgo = Math.floor(timeDiff / 60);
+                
+                let statusHtml, statusText;
+                
+                if (minutesAgo > 10) {
+                    statusHtml = '<span class="warning-badge">Внимание >10 мин</span>';
+                    statusText = `Старое бронирование (${minutesAgo} мин)`;
+                    element.closest('tr').classList.add('old-booking');
+                } else {
+                    statusHtml = '<span class="ok-badge">OK</span>';
+                    statusText = `Менее 10 мин (${minutesAgo} мин)`;
+                    element.closest('tr').classList.remove('old-booking');
+                }
+                
+                element.innerHTML = `
+                    ${statusHtml}
+                    <small>${statusText}</small>
+                `;
+            }
+        });
+    }
+    
+    // Вызываем расчет времени при загрузке страницы
+    updateWaitingTimes();
+    
+    // Обновляем время каждую минуту
+    setInterval(updateWaitingTimes, 60000);
+});
+</script>
+{% endblock %}
